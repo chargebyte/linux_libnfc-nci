@@ -55,44 +55,6 @@ NfccAltTransport::NfccAltTransport() {
 
 /*******************************************************************************
 **
-** Function         Flushdata
-**
-** Description      Reads payload of FW rsp from NFCC device into given buffer
-**
-** Parameters       pDevHandle - valid device handle
-**                  pBuffer    - buffer for read data
-**                  numRead    - number of bytes read by calling function
-**
-** Returns          always returns -1
-**
-*******************************************************************************/
-int NfccAltTransport::Flushdata(void* pDevHandle, uint8_t* pBuffer,
-                                int numRead) {
-  int retRead = 0;
-  uint16_t totalBtyesToRead =
-      pBuffer[FW_DNLD_LEN_OFFSET] + FW_DNLD_HEADER_LEN + CRC_LEN;
-  /* we shall read totalBtyesToRead-1 as one byte is already read by calling
-   * function*/
-  retRead = read((intptr_t)pDevHandle, pBuffer + numRead, totalBtyesToRead - 1);
-  if (retRead > 0) {
-    numRead += retRead;
-    phNxpNciHal_print_packet("RECV", pBuffer, numRead);
-  } else if (retRead == 0) {
-    NXPLOG_TML_E("%s _i2c_read() [pyld] EOF", __func__);
-  } else {
-    if (bFwDnldFlag == false) {
-      NXPLOG_TML_D("%s _i2c_read() [hdr] received", __func__);
-      phNxpNciHal_print_packet("RECV", pBuffer - numRead,
-                               NORMAL_MODE_HEADER_LEN);
-    }
-    NXPLOG_TML_E("%s _i2c_read() [pyld] errno : %x", __func__, errno);
-  }
-  SemPost();
-  return -1;
-}
-
-/*******************************************************************************
-**
 ** Function         Reset
 **
 ** Description      Reset NFCC device, using VEN pin

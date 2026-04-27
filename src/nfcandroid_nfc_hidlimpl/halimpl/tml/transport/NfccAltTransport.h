@@ -126,7 +126,6 @@ protected:
   void wait4interrupt(void);
   int SemTimedWait();
   void SemPost();
-  int Flushdata(void* pDevHandle, uint8_t* pBuffer, int numRead);
 
   /*****************************************************************************
    **
