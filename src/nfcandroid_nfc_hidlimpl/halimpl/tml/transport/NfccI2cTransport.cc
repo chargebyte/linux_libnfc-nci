@@ -442,6 +442,7 @@ int NfccI2cTransport::GetNfcState(void *pDevHandle) {
   NXPLOG_TML_D("%s :nfc state = %d", __func__, ret);
   return ret;
 }
+
 /*******************************************************************************
 **
 ** Function         EnableFwDnldMode

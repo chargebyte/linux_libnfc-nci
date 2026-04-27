@@ -21,7 +21,7 @@
 #include <NfccTransport.h>
 
 class NfccAltI2cTransport : public NfccAltTransport {
- public:
+public:
   /*****************************************************************************
    **
    ** Function         OpenAndConfigure
@@ -36,7 +36,7 @@ class NfccAltI2cTransport : public NfccAltTransport {
    **                  NFCSTATUS_INVALID_DEVICE - device open operation failure
    **
    ****************************************************************************/
-  NFCSTATUS OpenAndConfigure(pphTmlNfc_Config_t pConfig, void** pLinkHandle);
+  NFCSTATUS OpenAndConfigure(pphTmlNfc_Config_t pConfig, void** pLinkHandle) override;
 
   /*****************************************************************************
    **
@@ -54,7 +54,7 @@ class NfccAltI2cTransport : public NfccAltTransport {
    **                  -1        - read operation failure
    **
    ****************************************************************************/
-  int Read(void* pDevHandle, uint8_t* pBuffer, int nNbBytesToRead);
+  int Read(void* pDevHandle, uint8_t* pBuffer, int nNbBytesToRead) override;
 
   /*****************************************************************************
   **
@@ -71,6 +71,6 @@ class NfccAltI2cTransport : public NfccAltTransport {
   **                  -1         - write operation failure
   **
   *****************************************************************************/
-  int Write(void* pDevHandle, uint8_t* pBuffer, int nNbBytesToWrite);
-  void Close(void* pDevHandle);
+  int Write(void* pDevHandle, uint8_t* pBuffer, int nNbBytesToWrite) override;
+  void Close(void* pDevHandle) override;
 };

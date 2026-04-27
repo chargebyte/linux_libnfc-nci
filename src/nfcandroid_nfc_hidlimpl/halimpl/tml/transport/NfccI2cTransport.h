@@ -58,7 +58,7 @@
 extern phTmlNfc_i2cfragmentation_t fragmentation_enabled;
 
 class NfccI2cTransport : public NfccTransport {
- private:
+private:
   bool_t bFwDnldFlag = false;
   sem_t mTxRxSemaphore;
   /*****************************************************************************
@@ -87,7 +87,7 @@ class NfccI2cTransport : public NfccTransport {
 
   int Flushdata(void* pDevHandle, uint8_t* pBuffer, int numRead);
 
- public:
+public:
   /*****************************************************************************
   **
   ** Function         Close
@@ -99,7 +99,7 @@ class NfccI2cTransport : public NfccTransport {
   ** Returns          None
   **
   *****************************************************************************/
-  void Close(void *pDevHandle);
+  void Close(void *pDevHandle) override;
 
   /*****************************************************************************
    **
@@ -115,7 +115,7 @@ class NfccI2cTransport : public NfccTransport {
    **                  NFCSTATUS_INVALID_DEVICE - device open operation failure
    **
    ****************************************************************************/
-  NFCSTATUS OpenAndConfigure(pphTmlNfc_Config_t pConfig, void **pLinkHandle);
+  NFCSTATUS OpenAndConfigure(pphTmlNfc_Config_t pConfig, void **pLinkHandle) override;
 
   /*****************************************************************************
    **
@@ -133,7 +133,7 @@ class NfccI2cTransport : public NfccTransport {
    **                  -1        - read operation failure
    **
    ****************************************************************************/
-  int Read(void *pDevHandle, uint8_t *pBuffer, int nNbBytesToRead);
+  int Read(void *pDevHandle, uint8_t *pBuffer, int nNbBytesToRead) override;
 
   /*****************************************************************************
   **
@@ -150,7 +150,7 @@ class NfccI2cTransport : public NfccTransport {
   **                  -1         - write operation failure
   **
   *****************************************************************************/
-  int Write(void *pDevHandle, uint8_t *pBuffer, int nNbBytesToWrite);
+  int Write(void *pDevHandle, uint8_t *pBuffer, int nNbBytesToWrite) override;
 
   /*****************************************************************************
    **
@@ -165,7 +165,7 @@ class NfccI2cTransport : public NfccTransport {
    **                  -1   - reset operation failure
    **
    ****************************************************************************/
-  int NfccReset(void *pDevHandle, NfccResetType eType);
+  int NfccReset(void *pDevHandle, NfccResetType eType) override;
 
   /*****************************************************************************
    **
@@ -180,7 +180,7 @@ class NfccI2cTransport : public NfccTransport {
    **                  else - reset operation failure
    **
    ****************************************************************************/
-  int EseReset(void *pDevHandle, EseResetType eType);
+  int EseReset(void *pDevHandle, EseResetType eType) override;
 
   /*****************************************************************************
    **
@@ -195,7 +195,7 @@ class NfccI2cTransport : public NfccTransport {
    **                  else - reset operation failure
    **
    ****************************************************************************/
-  int EseGetPower(void *pDevHandle, long level);
+  int EseGetPower(void *pDevHandle, long level) override;
 
   /*****************************************************************************
    **
@@ -209,7 +209,7 @@ class NfccI2cTransport : public NfccTransport {
    **                   1   - i3c
    **
    ****************************************************************************/
-  int GetPlatform(void *pDevHandle);
+  int GetPlatform(void *pDevHandle) override;
 
   /*****************************************************************************
   **
@@ -223,7 +223,7 @@ class NfccI2cTransport : public NfccTransport {
   **                   2   - NCI
   **
   *****************************************************************************/
-  int GetNfcState(void *pDevHandle);
+  int GetNfcState(void *pDevHandle) override;
 
   /*****************************************************************************
    **
@@ -235,7 +235,7 @@ class NfccI2cTransport : public NfccTransport {
    **
    ** Returns          None
    ****************************************************************************/
-  void EnableFwDnldMode(bool mode);
+  void EnableFwDnldMode(bool mode) override;
 
   /*****************************************************************************
    **
@@ -247,9 +247,9 @@ class NfccI2cTransport : public NfccTransport {
    **
    ** Returns           Current mode download/NCI
    ****************************************************************************/
-  bool_t IsFwDnldModeEnabled(void);
+  bool_t IsFwDnldModeEnabled(void) override;
 
-  /*******************************************************************************
+  /*****************************************************************************
    **
    ** Function         GetIrqState
    **
@@ -260,6 +260,6 @@ class NfccI2cTransport : public NfccTransport {
    ** Returns          The state of IRQ line i.e. +ve if read is pending else Zer0.
    **                  In the case of IOCTL error, it returns -ve value.
    **
-   *******************************************************************************/
-  int GetIrqState(void *pDevHandle);
+   ****************************************************************************/
+  int GetIrqState(void *pDevHandle) override;
 };
