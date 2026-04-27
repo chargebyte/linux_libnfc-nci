@@ -66,3 +66,6 @@ Makefile
 # Editor
 *.orig
 *.rej
+
+# build dirs
+build-*
