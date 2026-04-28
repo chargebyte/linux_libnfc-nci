@@ -10,8 +10,18 @@ find_package(everest-cmake 0.1 REQUIRED
 )
 find_package(Threads REQUIRED)
 
+
 option(LIBNFCNCI_BUILD_EXAMPLES "enable building of examples" OFF)
 option(LIBNFCNCI_INSTALL "Install the library (shared data might be installed anyway)" ${EVC_MAIN_PROJECT})
+option(LIBNFCNCI_LIBGPIOD "Build with libgpiod support" OFF)
+
+if (LIBNFCNCI_LIBGPIOD)
+    # search for package PkgConfig
+    find_package(PkgConfig REQUIRED)
+
+    # search for libgpiod
+    pkg_search_module(LIBGPIOD REQUIRED libgpiodcxx)
+endif()
 
 if (NOT LIBNFCNCI_CONFIG_INSTALL_PATH)
     set (LIBNFCNCI_CONFIG_INSTALL_PATH "${CMAKE_INSTALL_SYSCONFDIR}/everest/libnfc_config/")
@@ -226,6 +236,7 @@ set (COMPILE_DEFINITIONS
     -DSNEP_ENABLED
 )
 
+
 #
 # library target
 #
@@ -241,7 +252,9 @@ target_sources(libnfc_nci
 
 target_compile_definitions(libnfc_nci
     PRIVATE
-        ${COMPILE_DEFINITIONS})
+        ${COMPILE_DEFINITIONS}
+        $<$<BOOL:${LIBNFCNCI_LIBGPIOD}>:USE_LIBGPIOD>
+)
 
 # NOTE (aw): this is dangerous
 target_compile_options(libnfc_nci
@@ -261,6 +274,18 @@ target_link_libraries(libnfc_nci
     PRIVATE
         Threads::Threads
 )
+
+if(LIBNFCNCI_LIBGPIOD)
+    target_include_directories(libnfc_nci
+        PRIVATE
+            ${LIBGPIOD_INCLUDE_DIRS}
+    )
+
+    target_link_libraries(libnfc_nci
+        PRIVATE
+            ${LIBGPIOD_LIBRARIES}
+    )
+endif()
 
 #
 # examples
@@ -314,4 +339,3 @@ if (LIBNFCNCI_INSTALL)
             "find_dependency(Threads)"
     )
 endif()
-

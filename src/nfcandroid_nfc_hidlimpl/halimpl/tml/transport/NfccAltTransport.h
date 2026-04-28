@@ -27,6 +27,10 @@
 #include <linux/i2c-dev.h>
 #include <linux/i2c.h>
 #include <poll.h>
+#include <memory>
+#ifdef USE_LIBGPIOD
+#include <gpiod.hpp>
+#endif
 
 #define EDGE_NONE 0
 #define EDGE_RISING 1
@@ -137,4 +141,26 @@ protected:
    ** Returns           NFCSTATUS_SUCCESS - on Success/ -1 on Failure
    ****************************************************************************/
   int ConfigurePin();
+
+  // flag whether libgpiod members are in use instead of deprecated
+  // file descriptors above
+  bool_t m_GpioDInUse{false};
+
+  int GetIrqStateSysFS();
+
+#ifdef USE_LIBGPIOD
+  std::unique_ptr<gpiod::line_request> mEnableLineRequest;
+  std::unique_ptr<gpiod::line_request> mFWDownloadLineRequest;
+  std::unique_ptr<gpiod::line_request> mIRQLineRequest;
+
+  gpiod::line_request GetGpioLineByName(const std::string& name,
+                                        const std::string& consumer,
+                                        const gpiod::line_settings& settings);
+  gpiod::line_request GetGpioDByName(const std::string& name,
+                                     const std::string& consumer,
+                                     gpiod::line_settings& settings);
+  int GetIrqStateLibGpioD();
+  void SetGpioDPin(gpiod::line_request& lq, const char* line_descr, int value);
+#endif
+
 };
