@@ -578,7 +578,7 @@ bool CNxpNfcConfig::getValue(const char* name, char* pValue, size_t len) const
     if (pParam->str_len() > 0)
     {
         memset(pValue, 0, len);
-        memcpy(pValue, pParam->str_value(), pParam->str_len());
+        memcpy(pValue, pParam->str_value(), (len - 1 < pParam->str_len()) ? len - 1 : pParam->str_len());
         return true;
     }
     return false;
