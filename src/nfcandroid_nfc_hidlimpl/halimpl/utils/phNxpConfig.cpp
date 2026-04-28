@@ -1085,7 +1085,7 @@ extern "C" int GetNxpNumValue(const char* name, void* pValue, unsigned long len)
 *******************************************************************************/
 extern "C" int loadIntValueOrDefault(const char* name, int default_value) {
   int value;
-  int isfound = GetNxpNumValue(name, &value, sizeof(&value));
+  int isfound = GetNxpNumValue(name, &value, sizeof(value));
   if (isfound > 0) {
     return value;
   }
