@@ -101,20 +101,6 @@ public:
 
   /*****************************************************************************
    **
-   ** Function         GetNfcState
-   **
-   ** Description      Get NFC state
-   **
-   ** Parameters       pDevHandle     - valid device handle
-   ** Returns           0   - unknown
-   **                   1   - FW DWL
-   **                   2   - NCI
-   **
-   ****************************************************************************/
-  int GetNfcState(void* pDevHandle) override;
-
-  /*****************************************************************************
-   **
    ** Function         Close
    **
    ** Description      Closes NFCC device
