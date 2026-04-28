@@ -113,12 +113,25 @@ public:
    ****************************************************************************/
   int GetNfcState(void* pDevHandle) override;
 
+  /*****************************************************************************
+   **
+   ** Function         Close
+   **
+   ** Description      Closes NFCC device
+   **
+   ** Parameters       pDevHandle - device handle
+   **
+   ** Returns          None
+   **
+   ****************************************************************************/
+  void Close(void *pDevHandle) override;
+
 protected:
   bool_t bFwDnldFlag = false;
   sem_t mTxRxSemaphore;
-  int iEnableFd;
-  int iInterruptFd;
-  int iFwDnldFd;
+  int iEnableFd{-1};
+  int iInterruptFd{-1};
+  int iFwDnldFd{-1};
 
   void gpio_set_ven(int value);
   void gpio_set_fwdl(int value);

@@ -72,5 +72,4 @@ public:
   **
   *****************************************************************************/
   int Write(void* pDevHandle, uint8_t* pBuffer, int nNbBytesToWrite) override;
-  void Close(void* pDevHandle) override;
 };

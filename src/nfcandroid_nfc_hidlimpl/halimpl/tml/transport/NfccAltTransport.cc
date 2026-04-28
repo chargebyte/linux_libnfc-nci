@@ -49,8 +49,6 @@ extern phTmlNfc_i2cfragmentation_t fragmentation_enabled;
 extern phTmlNfc_Context_t* gpphTmlNfc_Context;
 
 NfccAltTransport::NfccAltTransport() {
-  iEnableFd = 0;
-  iInterruptFd = 0;
 }
 
 /*******************************************************************************
@@ -223,7 +221,7 @@ int NfccAltTransport::GetIrqState(void* pDevHandle) {
   int len;
   char buf[2];
 
-  if (iInterruptFd <= 0) {
+  if (iInterruptFd < 0) {
     NXPLOG_TML_E("Error with interrupt-detect pin (%d)", iInterruptFd);
     return (-1);
   }
@@ -251,10 +249,10 @@ int NfccAltTransport::verifyPin(int pin, int isoutput, int edge) {
   sprintf(buf, "/sys/class/gpio/gpio%d", pin);
   NXPLOG_TML_D("Pin %s\n", buf);
   int fd = open(buf, O_RDONLY);
-  if (fd <= 0) {
+  if (fd < 0) {
     // Pin not exported yet
     NXPLOG_TML_D("Create pin %s\n", buf);
-    if ((fd = open("/sys/class/gpio/export", O_WRONLY)) > 0) {
+    if ((fd = open("/sys/class/gpio/export", O_WRONLY)) >= 0) {
       sprintf(buf, "%d", pin);
       if (write(fd, buf, strlen(buf)) == strlen(buf)) {
         hasGpio = 1;
@@ -275,7 +273,7 @@ int NfccAltTransport::verifyPin(int pin, int isoutput, int edge) {
     sprintf(buf, "/sys/class/gpio/gpio%d/direction", pin);
     NXPLOG_TML_D("Direction %s\n", buf);
     fd = open(buf, O_WRONLY);
-    if (fd <= 0) {
+    if (fd < 0) {
       NXPLOG_TML_E("Could not open direction port '%s' (%s)", buf,
                    strerror(errno));
       return -1;
@@ -289,14 +287,14 @@ int NfccAltTransport::verifyPin(int pin, int isoutput, int edge) {
         // Open pin and make sure it is off
         sprintf(buf, "/sys/class/gpio/gpio%d/value", pin);
         fd = open(buf, O_RDWR);
-        if (fd <= 0) {
+        if (fd < 0) {
         }
         close(fd);
 
         // Open pin and make sure it is off
         sprintf(buf, "/sys/class/gpio/gpio%d/value", pin);
         fd = open(buf, O_RDWR);
-        if (fd <= 0) {
+        if (fd < 0) {
           NXPLOG_TML_E("Could not open value port '%s' (%s)", buf,
                        strerror(errno));
           return -1;
@@ -317,7 +315,7 @@ int NfccAltTransport::verifyPin(int pin, int isoutput, int edge) {
           sprintf(buf, "/sys/class/gpio/gpio%d/edge", pin);
           NXPLOG_TML_D("Edge %s\n", buf);
           fd = open(buf, O_RDWR);
-          if (fd <= 0) {
+          if (fd < 0) {
             NXPLOG_TML_E("Could not open edge port '%s' (%s)", buf,
                          strerror(errno));
             return -1;
@@ -347,7 +345,7 @@ int NfccAltTransport::verifyPin(int pin, int isoutput, int edge) {
         sprintf(buf, "/sys/class/gpio/gpio%d/value", pin);
         NXPLOG_TML_D("Value %s\n", buf);
         fd = open(buf, O_RDONLY);
-        if (fd <= 0) {
+        if (fd < 0) {
           NXPLOG_TML_E("Could not open value port '%s' (%s)", buf,
                        strerror(errno));
           return -1;
@@ -360,7 +358,7 @@ int NfccAltTransport::verifyPin(int pin, int isoutput, int edge) {
   return (0);
 }
 void NfccAltTransport::gpio_set_ven(int value) {
-  if (iEnableFd > 0) {
+  if (iEnableFd >= 0) {
     if (value == 0) {
       write(iEnableFd, "0", 1);
     } else {
@@ -371,7 +369,7 @@ void NfccAltTransport::gpio_set_ven(int value) {
 }
 
 void NfccAltTransport::gpio_set_fwdl(int value) {
-  if (iFwDnldFd > 0) {
+  if (iFwDnldFd >= 0) {
     if (value == 0) {
       write(iFwDnldFd, "0", 1);
     } else {
@@ -422,4 +420,35 @@ int NfccAltTransport::ConfigurePin()
   iFwDnldFd = verifyPin(pin_fwd, 1, EDGE_NONE);
   if (iFwDnldFd < 0) return (NFCSTATUS_INVALID_DEVICE);
   return NFCSTATUS_SUCCESS;
+}
+
+/*******************************************************************************
+**
+** Function         Close
+**
+** Description      Closes NFCC device
+**
+** Parameters       pDevHandle - device handle
+**
+** Returns          None
+**
+*******************************************************************************/
+void NfccAltTransport::Close(void* pDevHandle) {
+  NXPLOG_TML_D("%s Enter", __func__);
+  if (NULL != pDevHandle) {
+    close((intptr_t)pDevHandle);
+  }
+  if (iEnableFd >= 0) {
+      close(iEnableFd);
+      iEnableFd = -1;
+  }
+  if (iInterruptFd >= 0) {
+      close(iInterruptFd);
+      iInterruptFd = -1;
+  }
+  if (iFwDnldFd >= 0) {
+      close(iFwDnldFd);
+      iFwDnldFd = -1;
+  }
+  NXPLOG_TML_D("%s exit", __func__);
 }

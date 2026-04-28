@@ -390,26 +390,3 @@ int NfccAltSpiTransport::Write(void* pDevHandle, uint8_t* pBuffer,
   NXPLOG_TML_D("%s exit", __func__);
   return numWrote - PREFIX_LENGTH;
 }
-
-/*******************************************************************************
-**
-** Function         Close
-**
-** Description      Closes NFCC device
-**
-** Parameters       pDevHandle - device handle
-**
-** Returns          None
-**
-*******************************************************************************/
-void NfccAltSpiTransport::Close(void* pDevHandle) {
-  NXPLOG_TML_D("%s Enter", __func__);
-  if (NULL != pDevHandle) {
-    close((intptr_t)pDevHandle);
-  }
-  if (iEnableFd) close(iEnableFd);
-  if (iInterruptFd) close(iInterruptFd);
-  if (iFwDnldFd) close(iFwDnldFd);
-  NXPLOG_TML_D("%s exit", __func__);
-  return;
-}
