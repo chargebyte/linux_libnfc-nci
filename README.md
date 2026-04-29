@@ -12,6 +12,7 @@ The [original upstream source code](https://github.com/NXPNFCLinux/linux_libnfc-
 - Added CMakeLists.txt
 - Allow for runtime configuration of interface properties for alternative I²C/SPI interface
 - Allow configuration files to be in a custom path
+- Added support for using GPIO line names via libgpiod
 
 ## Building
 
@@ -51,6 +52,13 @@ cmake --install .
 ```
 This will also install the configuration files into the expected folder.
 
+### libgpiod
+
+Building against `libgpiod` can be enabled by passing the property `LIBNFCNCI_LIBGPIOD` set to `ON` to cmake.
+By default, this is disabled.
+Using libgpiod and GPIO line names should be the preferred way to access GPIO lines from user-space since
+the older Linux' sysfs interface is deprecated since ages.
+
 ## Runtime Configuration
 
 Runtime configuration (debug output levels, detailled NFC behaviour, interface specification) happens via the above-mentioned files.
@@ -65,13 +73,26 @@ Relevant settings are:
 
 ```
 NXP_TRANSPORT=0x02
-NXP_NFC_DEV_NODE="/dev/nxpnfc"
 PIN_INT=535
 PIN_ENABLE=536
 PIN_FWDNLD=537
 I2C_ADDRESS=0x28
 I2C_BUS="/dev/i2c-1"
 SPI_BUS="/dev/spidev0.0"
+```
+
+When compiled with libgpiod support, then instead of using integers for Linux' legacy sysfs interface,
+it is possible to use GPIO line names. These are usually defined via Device Tree for your board.
+Such line names must be enclosed in quotation marks to indicate that the configuration value is a string.
+And it cannot be mixed: all pin configuration values needs to be GPIO line names.
+
+```
+NXP_TRANSPORT=0x02
+PIN_INT="RFID_IRQ"
+PIN_ENABLE="nRESET_RFID"
+PIN_FWDNLD="RFID_DWL_REQ"
+I2C_ADDRESS=0x28
+I2C_BUS="/dev/i2c-1"
 ```
 
 
