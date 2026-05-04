@@ -31,6 +31,7 @@
 #include <sys/select.h>
 #include <termios.h>
 #include <unistd.h>
+#include <linux/gpio.h>
 #include <NfccI2cTransport.h>
 #include <NfccAltTransport.h>
 #include <phNfcStatus.h>
@@ -421,6 +422,9 @@ void NfccAltTransport::wait4interrupt(void) {
   }
 }
 
+// use kernel's GPIO_MAX_NAME_SIZE (32 byte) plus potential '!' and plus trailing NUL byte
+#define NFCCALTTRANSPORT_MAX_NAME_SIZE (GPIO_MAX_NAME_SIZE + 1 + 1)
+
 /*****************************************************************************
    **
    ** Function         ConfigurePin
@@ -439,17 +443,23 @@ int NfccAltTransport::ConfigurePin()
   NXPLOG_TML_D("ConfigurePin: compiled w/o libgpiod support");
 #endif
 #ifdef USE_LIBGPIOD
-  char enable_linename[64];
-  char fwdl_linename[64];
-  char irq_linename[64];
+  char enable_linename[NFCCALTTRANSPORT_MAX_NAME_SIZE];
+  char fwdl_linename[NFCCALTTRANSPORT_MAX_NAME_SIZE];
+  char irq_linename[NFCCALTTRANSPORT_MAX_NAME_SIZE];
+
 
   // check whether all three config options are strings and only then try to
   // acquire all via libgpiod, otherwise just fallback and let the old code
   // handle errors
-  if (GetNxpStrValue(NAME_EXT_PIN_INT, irq_linename, sizeof(irq_linename)) &&
-      GetNxpStrValue(NAME_EXT_PIN_ENABLE, enable_linename, sizeof(enable_linename)) &&
-      GetNxpStrValue(NAME_EXT_PIN_FWDNLD, fwdl_linename, sizeof(fwdl_linename))) {
+  bool cfgstr_irq = GetNxpStrValue(NAME_EXT_PIN_INT, irq_linename, sizeof(irq_linename));
+  bool cfgstr_enable = GetNxpStrValue(NAME_EXT_PIN_ENABLE, enable_linename, sizeof(enable_linename));
+  bool cfgstr_fwdl = GetNxpStrValue(NAME_EXT_PIN_FWDNLD, fwdl_linename, sizeof(fwdl_linename));
+  NXPLOG_TML_D("ConfigurePin: GPIO line names: %s=%d (%s), %s=%d (%s), %s=%d (%s)",
+               NAME_EXT_PIN_INT, cfgstr_irq, cfgstr_irq ? irq_linename : "",
+               NAME_EXT_PIN_ENABLE, cfgstr_enable, cfgstr_enable ? enable_linename : "",
+               NAME_EXT_PIN_FWDNLD, cfgstr_fwdl, cfgstr_fwdl ? fwdl_linename : "");
 
+  if (cfgstr_irq && cfgstr_enable && cfgstr_fwdl) {
     try {
       gpiod::line_settings line_settings;
       line_settings.set_direction(gpiod::line::direction::OUTPUT);
