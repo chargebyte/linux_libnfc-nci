@@ -5,6 +5,8 @@ project(libnfcnci
     DESCRIPTION "NFC NCI library adapted for use with EVerest"
     LANGUAGES C CXX)
 
+include(GNUInstallDirs)
+
 find_package(everest-cmake 0.1 REQUIRED
     PATHS ../everest-cmake
 )
@@ -31,6 +33,14 @@ set (LIBNFCNCI_CONFIG_FILES
     conf/libnfc-nci.conf
     conf/libnfc-nxp.conf
 )
+
+set(LIBNFCNCI_PUBLIC_HEADERS
+    src/include/linux_nfc_api.h
+    src/include/linux_nfc_api_compatibility.h
+    src/include/linux_nfc_factory_api.h
+)
+
+set(LIBNFCNCI_SOVERSION 1)
 
 set (LIBNFCNCI_SOURCES
     src/android/utility/base/file.cpp
@@ -240,7 +250,7 @@ set (COMPILE_DEFINITIONS
 #
 # library target
 #
-add_library(libnfc_nci)
+add_library(libnfc_nci SHARED)
 add_library(libnfc_nci::libnfc_nci ALIAS libnfc_nci)
 
 target_sources(libnfc_nci
@@ -273,6 +283,13 @@ target_include_directories(libnfc_nci
 target_link_libraries(libnfc_nci
     PRIVATE
         Threads::Threads
+)
+
+set_target_properties(libnfc_nci
+    PROPERTIES
+        VERSION ${PROJECT_VERSION}
+        SOVERSION ${LIBNFCNCI_SOVERSION}
+        OUTPUT_NAME nfc_nci
 )
 
 if(LIBNFCNCI_LIBGPIOD)
@@ -320,10 +337,14 @@ if (LIBNFCNCI_INSTALL)
     install(
         TARGETS libnfc_nci
         EXPORT libnfc_nci-targets
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     )
 
     install(
-        DIRECTORY src/include/
+        FILES ${LIBNFCNCI_PUBLIC_HEADERS}
         TYPE INCLUDE
     )
 
@@ -335,7 +356,5 @@ if (LIBNFCNCI_INSTALL)
         NAME libnfc-nci
         EXPORT libnfc_nci-targets
         NAMESPACE libnfc_nci
-        ADDITIONAL_CONTENT
-            "find_dependency(Threads)"
     )
 endif()
