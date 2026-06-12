@@ -317,6 +317,10 @@ if(LIBNFCNCI_BUILD_EXAMPLES)
         PRIVATE
             libnfc_nci
     )
+    install(
+        TARGETS nfc_cb_example
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    )
 
     add_executable(nfc_demo)
     target_sources(nfc_demo
@@ -327,6 +331,10 @@ if(LIBNFCNCI_BUILD_EXAMPLES)
     target_link_libraries(nfc_demo
         PRIVATE
             libnfc_nci
+    )
+    install(
+        TARGETS nfc_demo
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     )
 endif()
 
