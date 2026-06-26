@@ -191,6 +191,11 @@ void setConfigPath (const char *path)
     SetNciHalConfigPath(path);
 }
 
+int setNxpConfigValue(const char* name, const char* value)
+{
+    return SetNxpConfigValue(name, value) ? NFA_STATUS_OK : NFA_STATUS_FAILED;
+}
+
 int doInitialize ()
 {
     int ret;

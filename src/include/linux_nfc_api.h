@@ -638,6 +638,15 @@ extern int nfcTag_transceive (unsigned int handle, unsigned char *tx_buffer, int
 extern void setConfigPath (const char *path);
 
 /**
+* \brief override selected runtime transport config values in memory.
+* \param name: one of NXP_TRANSPORT, PIN_INT, PIN_ENABLE, PIN_FWDNLD,
+*              I2C_ADDRESS, I2C_BUS or SPI_BUS.
+* \param value: numeric values may be passed as decimal or hex, bus values as plain strings.
+* \return 0 if success, otherwise failed.
+*/
+extern int setNxpConfigValue(const char* name, const char* value);
+
+/**
 * \brief initialize nfc stack.
 * \return 0 if success, otherwise failed.
 */

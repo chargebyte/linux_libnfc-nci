@@ -50,6 +50,7 @@ extern "C" {
 #endif
 
 void SetNxpAlternativeConfigPath(const char* path);
+int SetNxpConfigValue(const char* name, const char* value);
 int GetNxpStrValue(const char* name, char* p_value, unsigned long len);
 int GetNxpNumValue(const char* name, void* p_value, unsigned long len);
 int loadIntValueOrDefault(const char* name, int default_value);

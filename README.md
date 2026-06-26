@@ -95,6 +95,27 @@ I2C_ADDRESS=0x28
 I2C_BUS="/dev/i2c-1"
 ```
 
+Applications can override these transport-related settings in memory, before
+calling `doInitialize()`, via:
+
+```c
+setNxpConfigValue("NXP_TRANSPORT", "0x02");
+setNxpConfigValue("PIN_INT", "535");
+setNxpConfigValue("PIN_ENABLE", "536");
+setNxpConfigValue("PIN_FWDNLD", "537");
+setNxpConfigValue("I2C_ADDRESS", "0x28");
+setNxpConfigValue("I2C_BUS", "/dev/i2c-1");
+setNxpConfigValue("SPI_BUS", "/dev/spidev0.0");
+```
+
+The library does not require `libnfc-nxp.conf` to exist on disk for every
+setting. If individual runtime transport settings are missing, the code falls
+back to built-in defaults for `PIN_INT`, `PIN_ENABLE`, `PIN_FWDNLD`,
+`I2C_ADDRESS`, `I2C_BUS` and `SPI_BUS`. `NXP_TRANSPORT` is the exception:
+there is no built-in default transport selection, so initialization still
+requires either `libnfc-nxp.conf` to define it or the application to call
+`setNxpConfigValue("NXP_TRANSPORT", ...)`.
+
 
 ---
 
