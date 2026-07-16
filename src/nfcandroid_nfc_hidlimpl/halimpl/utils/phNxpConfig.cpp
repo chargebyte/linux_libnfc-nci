@@ -1058,6 +1058,11 @@ extern "C" int GetNxpNumValue(const char* name, void* pValue, unsigned long len)
     case sizeof(unsigned long):
         *(static_cast<unsigned long*>(pValue)) = (unsigned long)v;
         break;
+#if __SIZEOF_LONG__ != __SIZEOF_INT__
+    case sizeof(unsigned int):
+        *(static_cast<unsigned int*>(pValue)) = (unsigned int)v;
+        break;
+#endif
     case sizeof(unsigned short):
         *(static_cast<unsigned short*>(pValue)) = (unsigned short)v;
         break;
@@ -1084,9 +1089,6 @@ extern "C" int GetNxpNumValue(const char* name, void* pValue, unsigned long len)
 **
 *******************************************************************************/
 extern "C" int loadIntValueOrDefault(const char* name, int default_value) {
-    // GetNxpNumValue only dispatches on sizeof(unsigned long long/short/char)
-    // (see above); a 4-byte int hits the default case and returns false. Use unsigned
-    // long so the length matches a supported case.
     unsigned long value = 0;
     int isfound = GetNxpNumValue(name, &value, sizeof(value));
     if (isfound > 0) {
