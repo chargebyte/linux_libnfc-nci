@@ -9,7 +9,6 @@ find_package(everest-cmake 0.1 REQUIRED
     PATHS ../everest-cmake
 )
 find_package(Threads REQUIRED)
-find_library(LIBRT rt)
 
 option(LIBNFCNCI_BUILD_EXAMPLES "enable building of examples" OFF)
 option(LIBNFCNCI_INSTALL "Install the library (shared data might be installed anyway)" ${EVC_MAIN_PROJECT})
@@ -261,7 +260,6 @@ target_include_directories(libnfc_nci
 target_link_libraries(libnfc_nci
     PRIVATE
         Threads::Threads
-        ${LIBRT}
 )
 
 #
