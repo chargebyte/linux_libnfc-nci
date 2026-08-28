@@ -40,7 +40,7 @@ set(LIBNFCNCI_PUBLIC_HEADERS
     src/include/linux_nfc_factory_api.h
 )
 
-set(LIBNFCNCI_SOVERSION 1)
+set(LIBNFCNCI_SOVERSION 2)
 
 set (LIBNFCNCI_SOURCES
     src/android/utility/base/file.cpp
